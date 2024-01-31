@@ -1,4 +1,4 @@
-/* eslint-disable prettier/prettier */
+
 // const fs = require('fs');
 // const {getAllTours,createTour,getTour,updateTour,deleteTour} = require('../controllers/tourController.js');
 
