@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-
 const Tour = require(`./../models/tourModels`);
 
 // const tours = JSON.parse(
@@ -22,18 +20,33 @@ const Tour = require(`./../models/tourModels`);
 exports.getAllTours = async (req, res) => {
   // console.log(req.requestTime);
   try {
+    console.log(req.query);
+    //BUILD QUERY
+    // 1A) Filtering
     const queryObj = { ...req.query };
     const excludedField = ['page', 'sort', 'limit', 'fields'];
     excludedField.forEach((el) => delete queryObj[el]);
 
-    console.log(req.query, queryObj);
-    const tours = await Tour.find(queryObj);
-    // const tours = await Tour.find()
+    // 1B) Advanced filtering
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    console.log(JSON.parse(queryStr));
+
+    // {difficulty: 'easy', duration: {$gte:5}}
+    // {difficulty: 'easy', duration: {gte:'5'}}
+
+    const query = Tour.find(JSON.parse(queryStr));
+
+    //EXECUTE QUERY
+    const tours = await query;
+
+    // const tours =  Tour.find()
     //   .where('difficulty')
     //   .equals('easy')
     //   .where('duration')
     //   .equals(5);
 
+    // SEND RESPONSE
     res.status(200).json({
       status: 'success',
       requestedAT: req.requestTime,
