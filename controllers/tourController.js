@@ -38,7 +38,6 @@ exports.getAllTours = async (req, res) => {
     let query = Tour.find(JSON.parse(queryStr));
 
     //2) SORTING
-
     if (req.query.sort) {
       const sortyBy = req.query.sort.split(',').join(' ');
       console.log(sortyBy);
@@ -48,7 +47,7 @@ exports.getAllTours = async (req, res) => {
       query = query.sort('-createdAt');
     }
 
-    // Field limiting
+    //3) Field limiting
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
       console.log(fields);
@@ -58,6 +57,16 @@ exports.getAllTours = async (req, res) => {
       query = query.select('-__v');
     }
 
+    //4) Pagination
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      console.log(numTours);
+      if (skip >= numTours) throw new Error('This page does not exists');
+    }
     //EXECUTE QUERY
     const tours = await query;
 
