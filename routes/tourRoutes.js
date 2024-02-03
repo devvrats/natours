@@ -1,4 +1,3 @@
-
 // const fs = require('fs');
 // const {getAllTours,createTour,getTour,updateTour,deleteTour} = require('../controllers/tourController.js');
 
@@ -90,6 +89,11 @@ const tourController = require(`${__dirname}/../controllers/tourController.js`);
 //     data: null,
 //   });
 // };
+
+router
+  .route('/top-5-cheap')
+  .get(tourController.aliasTopTours, tourController.getAllTours);
+
 router
   .route('/')
   .get(tourController.getAllTours)
