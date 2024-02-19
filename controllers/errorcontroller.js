@@ -33,7 +33,7 @@ const sendErrorDev = (err, res) => {
 
 const sendErrorProd = (err, res) => {
   //Operational, trusted error:send message to client
-  console.log(err);
+ 
   if (err.isOperation) {
     res.status(err.statusCode).json({
       status: err.status,

@@ -38,7 +38,7 @@ userSchema.pre('save', async function (next) {
   //Hash the password with the cost of 12
   this.password = await bcrypt.hash(this.password, 12);
 
-  console.log(this.password);
+ 
 
   //delete confirm field
   this.passwordConfirm = undefined;
