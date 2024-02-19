@@ -32,6 +32,7 @@ app.use((req, res, next) => {
 
 // const userRouter = express.Router();
 
+// Route
 app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', userRoute);
 

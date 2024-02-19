@@ -11,7 +11,7 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       maxLength: [40, 'A tour must have less or equal than 40 charactors'],
       minLength: [10, 'A tour must have more or equal than 10 charactors'],
-      validate: [validator.isAlpha, 'Tour name must only contain characters'],
+      // validate: [validator.isAlpha, 'Tour name must only contain characters'],
     },
     slug: String,
     duration: { type: Number, required: [true, 'A tour must have a duration'] },
@@ -66,7 +66,7 @@ const tourSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true }, id: false },
 );
 
 tourSchema.virtual('durationWeeks').get(function () {
