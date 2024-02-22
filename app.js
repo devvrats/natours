@@ -19,6 +19,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 app.use(express.json()); //express.json also called body perser
+app.use(express.static(`${__dirname}/public`));
 
 //creating our own middleware
 app.use((req, res, next) => {
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 });
 app.use((req, res, next) => {
   req.requestTime = new Date().toDateString();
+  // console.log(req.headers);
   next();
 });
 
