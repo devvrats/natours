@@ -88,6 +88,8 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     .paginate();
   const tours = await features.query;
 
+  console.log('hello4');
+
   // const tours =  Tour.find()
   //   .where('difficulty')
   //   .equals('easy')
