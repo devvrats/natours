@@ -16,6 +16,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role,
   });
 
   const token = signToken(newUser._id);
@@ -51,8 +52,6 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.protect = catchAsync(async (req, res, next) => {
   //1)Getting the token and check of it's there
   let token;
-
-  console.log(req.headers);
 
   if (
     req.headers.authorization &&
@@ -91,7 +90,18 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // GRANT ACCESS TO PROTECTED ROUTE
-  console.log('hello4');
   req.user = freshUser;
   next();
 });
+
+exports.restrictTO = (...roles) => {
+  return (req, res, next) => {
+    // roles ['admin', 'tour-guide']. roles='user'
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403),
+      );
+    }
+    next();
+  };
+};
