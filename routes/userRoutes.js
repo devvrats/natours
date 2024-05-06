@@ -1,9 +1,14 @@
 /* eslint-disable prettier/prettier */
 const express = require('express');
 
-const { getAllUsers, getUser, createUser, updateUser, deleteUser } = require(
-  `../controllers/userController.js`,
-);
+const {
+  getAllUsers,
+  getUser,
+  createUser,
+  updateUser,
+  deleteUser,
+  updateMe,
+} = require(`../controllers/userController.js`);
 const authController = require('../controllers/authController');
 const router = express.Router();
 // const getAllUsers = (req, res) => {
@@ -48,6 +53,7 @@ router.patch(
   authController.protect,
   authController.updatePassword,
 );
+router.patch('/updateMe', authController.protect, updateMe);
 
 router.route('/').get(getAllUsers).post(createUser);
 router.route('/:id').get(getUser).delete(deleteUser).patch(updateUser);

@@ -5,7 +5,6 @@ const User = require('../models/userModels');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
-const bcrypt = require('bcryptjs');
 
 const signToken = (id) =>
   jwt.sign({ id: id }, process.env.MY_SECRET, {
@@ -18,6 +17,7 @@ const createSendToken = (user, statusCode, res) => {
   res.status(statusCode).json({
     status: 'success',
     token,
+    user,
   });
 };
 
