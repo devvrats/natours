@@ -5,6 +5,9 @@ const app = express();
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorcontroller');
@@ -35,6 +38,26 @@ app.use('/api', limiter);
 
 // Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //express.json also called body perser
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitizaation against cross-site scripting attacks(XSS)
+app.use(xss());
+
+// Prevent patameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
 // Service static files
 app.use(express.static(`${__dirname}/public`));
