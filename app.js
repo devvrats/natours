@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorcontroller');
@@ -15,6 +16,11 @@ const userRoute = require(`./routes/userRoutes.js`);
 // middleware, it is function that can modify the incoming request data. It stand in the middle of request and response.
 
 // 1. Global Middleware
+
+//Set security HTTP headers
+app.use(helmet());
+
+//Development logging
 if (process.env.NODE_ENV === 'development') {
   // console.log(process.env.NODE_ENV);
   app.use(morgan('dev'));
@@ -26,7 +32,11 @@ const limiter = rateLimit({
   message: 'Too many request from this IP, please try again in an hour',
 });
 app.use('/api', limiter);
-app.use(express.json()); //express.json also called body perser
+
+// Body Parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' })); //express.json also called body perser
+
+// Service static files
 app.use(express.static(`${__dirname}/public`));
 
 //creating our own middleware
@@ -34,6 +44,8 @@ app.use((req, res, next) => {
   // console.log('Helle from the middleware😀');
   next();
 });
+
+// Test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toDateString();
   // console.log(req.headers);
