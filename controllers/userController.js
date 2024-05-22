@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-const User = require('../models/userModels');
+const User = require('../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/apiFeatures');
 
