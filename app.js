@@ -14,6 +14,7 @@ const globalErrorHandler = require('./controllers/errorcontroller');
 
 const tourRoute = require(`./routes/tourRoutes.js`);
 const userRoute = require(`./routes/userRoutes.js`);
+const reviewRouter = require('./routes/reviewRoutes.js');
 // console.log(__dirname);
 
 // middleware, it is function that can modify the incoming request data. It stand in the middle of request and response.
@@ -77,9 +78,10 @@ app.use((req, res, next) => {
 
 // const userRouter = express.Router();
 
-// Route
+// ROUTES
 app.use('/api/v1/tours', tourRoute);
 app.use('/api/v1/users', userRoute);
+app.use('/api/v1/review', reviewRouter);
 
 app.all('*', (req, res, next) => {
   // res.status(404).json({

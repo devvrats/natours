@@ -1,5 +1,5 @@
 //review/ rating / creaatedAt / ref to tour / ref to user
-const { default: mongoose } = require('mongoose');
+// const { default: mongoose } = require('mongoose');
 const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema(
