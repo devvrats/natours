@@ -1,4 +1,7 @@
 const authController = require('../controllers/authController');
+// const reviewController = require('../controllers/reviewController');
+const reviewRoutes = require('./reviewRoutes');
+
 // const fs = require('fs');
 // const {getAllTours,createTour,getTour,updateTour,deleteTour} = require('../controllers/tourController.js');
 
@@ -97,6 +100,19 @@ router
 
 router.route('/tour-stats').get(tourController.getTourStates);
 router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
+
+router.use('/:tourId/reviews',reviewRoutes);
+//Post /tour/746hdu8/reviews
+//Get /tour/746hdu8/reviews
+//Get /tour/746hdu8/reviews/7643hdk4
+
+// router
+//   .route('/:tourId/reviews')
+//   .post(
+//     authController.protect,
+//     authController.restrictTO('user'),
+//     reviewController.createReview,
+//   );
 
 router
   .route('/')
