@@ -99,9 +99,13 @@ router
   .get(tourController.aliasTopTours, tourController.getAllTours);
 
 router.route('/tour-stats').get(tourController.getTourStates);
-router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
+router.route('/monthly-plan/:year').get(
+  authController.protect,
+  authController.restrictTO('admin', 'tour-guide', 'guide'),
+  tourController.getMonthlyPlan,
+);
 
-router.use('/:tourId/reviews',reviewRoutes);
+router.use('/:tourId/reviews', reviewRoutes);
 //Post /tour/746hdu8/reviews
 //Get /tour/746hdu8/reviews
 //Get /tour/746hdu8/reviews/7643hdk4
@@ -116,12 +120,20 @@ router.use('/:tourId/reviews',reviewRoutes);
 
 router
   .route('/')
-  .get(authController.protect, tourController.getAllTours)
-  .post(tourController.createTour);
+  .get(tourController.getAllTours)
+  .post(
+    authController.protect,
+    authController.restrictTO('admin', 'lead-guides'),
+    tourController.createTour,
+  );
 router
   .route('/:id')
   .get(tourController.getTour)
-  .patch(tourController.updateTour)
+  .patch(
+    authController.protect,
+    authController.restrictTO('admin', 'tour-guide'),
+    tourController.updateTour,
+  )
   .delete(
     authController.protect,
     authController.restrictTO('admin', 'tour-guide'),
