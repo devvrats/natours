@@ -76,80 +76,78 @@ exports.getOne = (Model, popOptions) =>
     //   data: tour,
     // });
   });
-exports.getAll = (Model, popOptions) => 
+exports.getAll = (Model) =>
+  catchAsync(async (req, res, next) => {
+    // console.log(req.requestTime);
 
-catchAsync(async (req, res, next) => {
-  // console.log(req.requestTime);
+    // console.log(req.query);
+    //BUILD QUERY
+    // 1A) Filtering
+    // const queryObj = { ...req.query };
+    // const excludedField = ['page', 'sort', 'limit', 'fields'];
+    // excludedField.forEach((el) => delete queryObj[el]);
 
-  // console.log(req.query);
-  //BUILD QUERY
-  // 1A) Filtering
-  // const queryObj = { ...req.query };
-  // const excludedField = ['page', 'sort', 'limit', 'fields'];
-  // excludedField.forEach((el) => delete queryObj[el]);
+    // // 1B) Advanced filtering
+    // let queryStr = JSON.stringify(queryObj);
+    // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // console.log(JSON.parse(queryStr));
 
-  // // 1B) Advanced filtering
-  // let queryStr = JSON.stringify(queryObj);
-  // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-  // console.log(JSON.parse(queryStr));
+    // // {difficulty: 'easy', duration: {$gte:5}}
+    // // {difficulty: 'easy', duration: {gte:'5'}}
 
-  // // {difficulty: 'easy', duration: {$gte:5}}
-  // // {difficulty: 'easy', duration: {gte:'5'}}
+    // let query = Tour.find(JSON.parse(queryStr));
 
-  // let query = Tour.find(JSON.parse(queryStr));
+    //2) SORTING
+    // if (req.query.sort) {
+    //   const sortyBy = req.query.sort.split(',').join(' ');
 
-  //2) SORTING
-  // if (req.query.sort) {
-  //   const sortyBy = req.query.sort.split(',').join(' ');
+    //   query = query.sort(sortyBy);
+    //   //{sort, ratingsAverage}
+    // } else {
+    //   query = query.sort('-createdAt');
+    // }
 
-  //   query = query.sort(sortyBy);
-  //   //{sort, ratingsAverage}
-  // } else {
-  //   query = query.sort('-createdAt');
-  // }
+    //3) Field limiting
+    // if (req.query.fields) {
+    //   const fields = req.query.fields.split(',').join(' ');
+    //   console.log(fields);
+    //   query = query.select(fields);
+    // } else {
+    //   query = query.select('-__v');
+    // }
 
-  //3) Field limiting
-  // if (req.query.fields) {
-  //   const fields = req.query.fields.split(',').join(' ');
-  //   console.log(fields);
-  //   query = query.select(fields);
-  // } else {
-  //   query = query.select('-__v');
-  // }
+    //4) Pagination
+    // const page = req.query.page * 1 || 1;
+    // const limit = req.query.limit * 1 || 100;
+    // const skip = (page - 1) * limit;
 
-  //4) Pagination
-  // const page = req.query.page * 1 || 1;
-  // const limit = req.query.limit * 1 || 100;
-  // const skip = (page - 1) * limit;
+    // query = query.skip(skip).limit(limit);
+    // if (req.query.page) {
+    //   const numTours = await Tour.countDocuments();
+    //   console.log(numTours);
+    //   if (skip >= numTours) throw new Error('This page does not exists');
+    // }
 
-  // query = query.skip(skip).limit(limit);
-  // if (req.query.page) {
-  //   const numTours = await Tour.countDocuments();
-  //   console.log(numTours);
-  //   if (skip >= numTours) throw new Error('This page does not exists');
-  // }
+    //EXECUTE QUERY
 
-  //EXECUTE QUERY
+    //To allow for Nested GET reviews on tour (hack)
+    let filter = {};
+    if (req.params.tourId) filter = { tour: req.params.tourId };
+    const features = new APIFeatures(Model.find(filter), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    // const doc = await features.query.explain();
+    const doc = await features.query;
 
-  //To allow for Nested GET reviews on tour (hack)
-  let filter = {};
-  if (req.params.tourId) filter = { tour: req.params.tourId };
-  const features = new APIFeatures(Model.find(filter), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-
-  let doc = features.query.populate(popOptions);
-  doc = await features.query;
-
-  // SEND RESPONSE
-  res.status(200).json({
-    status: 'success',
-    requestedAT: req.requestTime,
-    results: doc.length,
-    data: {
-      data: doc,
-    },
+    // SEND RESPONSE
+    res.status(200).json({
+      status: 'success',
+      requestedAT: req.requestTime,
+      results: doc.length,
+      data: {
+        data: doc,
+      },
+    });
   });
-});
